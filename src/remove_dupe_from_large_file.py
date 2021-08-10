@@ -1,3 +1,5 @@
+# very incomplete
+
 import math
 import sys
 import psutil
@@ -7,8 +9,6 @@ from os import path
 # Get Available RAM
 percent_of_mem_avail = psutil.virtual_memory().available * 100 / psutil.virtual_memory().total
 amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.5)
-#print(amount_of_ram_to_be_used)
-
 
 # Store each section into a set
 curr_set = set()
@@ -20,13 +20,22 @@ char_tracker = 0
 # and the second value is the length of the string 
 dupe_loc = []
 
+# Line count of set
+fill_set_line_count = 0
 
+# Counter used to insert into the set
+arr_counter = 0
 
 
 # Fill the Set until it hits the RAM limit
-fill_set_line_count = 0
-arr_counter = 0
+# NOTE: Lists/Sets do not grow in memory as the list/set grows
+# The amount of space in memory increases when the list has a certain number of items
+# i.e [1,2,3] ==> sizeof ==> 712 bytes, [1,2,3,4] ==> sizeof ==> 712 bytes
+# [1,2,3,4,5,6,7,8] ==> sizeof == 1024 bytes, [1,2,3,4,5,6,7,8,9,10,11] ==> sizeof ==> 1388 bytes
 def fill_set(file_input):
+    global fill_set_line_count
+    global char_tracker
+    global arr_counter
     with open(file_input, 'r') as input:
         line = input.readline()
         while curr_set.__sizeof__() < amount_of_ram_to_be_used:
