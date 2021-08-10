@@ -23,9 +23,11 @@ dupe_loc = []
 # Line count of set
 fill_set_line_count = 0
 
-# Counter used to insert into the set
+# Counter used to insert into the dupe_loc array
 arr_counter = 0
 
+# Counter for Duplicates
+dupe_count = 0
 
 # Fill the Set until it hits the RAM limit
 # NOTE: Lists/Sets do not grow in memory as the list/set grows
@@ -36,6 +38,7 @@ def fill_set(file_input):
     global fill_set_line_count
     global char_tracker
     global arr_counter
+    global dupe_count
     with open(file_input, 'r') as input:
         line = input.readline()
         while curr_set.__sizeof__() < amount_of_ram_to_be_used:
@@ -43,6 +46,7 @@ def fill_set(file_input):
             if line in curr_set:
                 dupe_loc.insert(arr_counter, [fill_set_line_count, len(line)])
                 arr_counter += 1
+                dupe_count += 1
             else:
                 curr_set.add(line)
             line = input.readline()
@@ -54,30 +58,30 @@ def fill_set(file_input):
 # if it is found
 def compare_to_file(file_input):
     with open(file_input, 'r') as input:
-        dupe_count = 0
+        global char_tracker
+        global arr_counter
+        global dupe_count
         line_count = 0
         for line in input:
             if line_count < fill_set_line_count:
                 continue
             elif line in curr_set:
-                dupe_count += 1
-                #REMOVE DUPLICATE LINE
-                #removeLine(file_input, line_count)
-                dupe_loc.insert(arr_counter, [fill_set_line_count, len(line)])
+                dupe_loc.insert(arr_counter, [line_count, len(line)])
                 arr_counter += 1
+                dupe_count += 1
             line_count += 1
     print("# of duplicates", dupe_count)
 
-def remove(fileinput):
+
+# Function will remove the lines based on the dupe_loc array
+def removeLine(fileinput):
     for x in dupe_loc:
-        if x == 0:
-            removeLine(fileinput, x[0])
-        else:
-            removeLine(fileinput, x[0] - 1)    
+        removeLineHelper(fileinput, x[0])
+        decrement_line()  
 
 # Delete line from file
-def removeLine(file_input, line_selection):
-    fro = open(file_input, "rb")
+def removeLineHelper(file_input, line_selection):
+    fro = open(file_input, "r")
 
     current_line = 0
     while current_line < line_selection:
@@ -85,7 +89,7 @@ def removeLine(file_input, line_selection):
         current_line += 1
 
     seekpoint = fro.tell()
-    frw = open(file_input, "r+b")
+    frw = open(file_input, "r+")
     frw.seek(seekpoint, 0)
 
     # read the line we want to discard
