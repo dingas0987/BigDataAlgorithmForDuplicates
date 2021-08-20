@@ -5,7 +5,7 @@ import os
 from os import path
 
 dupe_loc = []
-amount_of_ram_to_be_used = 255
+amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.25)
 curr_set = set()
 dupe_count = 0
 total_lines = 0
@@ -31,7 +31,7 @@ def fill_set(file_input):
         for line in input:
             if curr_set.__sizeof__() < amount_of_ram_to_be_used:
                 fill_set_line_count += 1
-                if fill_set_line_count >= offset_by:
+                if fill_set_line_count > offset_by:
                     if line in curr_set:
                         dupe_loc.append(fill_set_line_count)
                         dupe_count += 1
@@ -42,10 +42,6 @@ def fill_set(file_input):
     fill_set_line_count = 0
     leftover = leftover - offset_by
     compare_to_file(file_input)
-    #print("fill set line counter: ", fill_set_line_count)
-    #print("offset val", offset_by)
-    #print("offset val", offset_by)
-    #print("fill set line counter: ", fill_set_line_count)
 
 def compare_to_file(file_input):
     with open(file_input, 'r') as input:
@@ -58,7 +54,7 @@ def compare_to_file(file_input):
                 if line in curr_set:
                     dupe_loc.append(line_count)
                     counter += 1
-    print("# of duplicates searching in rest of file", counter)
+    print("# of dupes in rest of file that is contained in current set", counter)
     dupe_count += counter
     print("current # of duplicates found", dupe_count)
     curr_set.clear()
@@ -92,29 +88,22 @@ def removeLineHelper(file_input, line_selection):
 # Counter starts at 1 since the first line in the text file is line 0
 # counter is then incremented for each removal in the array of duplicates
 def delete_lines(filename):
+    dupe_loc.sort()
     counter = 1
     for x in dupe_loc:
-        removeLineHelper(filename, x-counter)
+        removeLineHelper(filename, x - counter)
         counter += 1
     dupe_loc.clear()
 
 def main():
     filename = 'sample3.txt'
+    #filename = 'C:\\Users\\Vin\\Documents\\GitHub\\NameCombinations\\updated_combos.txt'
     get_total_lines(filename)
     while(leftover != 0):
         fill_set(filename)
         if offset_by == total_lines:
             break
     delete_lines(filename)
-    #delete_lines(filename)
-    #print(dupe_loc)
-    #delete_lines(filename)
-    #print(dupe_loc)
-    #print(curr_set)
-    #fill_set(filename)
-    #compare_to_file(filename)
-    #print(curr_set)
-    #print(dupe_loc)
     print("total dupes", dupe_count)
 
 
