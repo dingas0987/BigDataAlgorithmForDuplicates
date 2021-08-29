@@ -5,7 +5,8 @@ import os
 from os import path
 from file_utils import *
 
-amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.05)
+#amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.05)
+amount_of_ram_to_be_used = 255 #4294967296
 dupe_loc = []
 curr_set = set()
 dupe_count = 0
@@ -32,8 +33,11 @@ def fill_set(file_input):
                 fill_set_line_count += 1
                 if fill_set_line_count > offset_by:
                     if line in curr_set:
-                        dupe_loc.append(fill_set_line_count)
-                        dupe_count += 1
+                        if fill_set_line_count in dupe_loc:
+                            continue
+                        else:
+                            dupe_loc.append(fill_set_line_count)
+                            dupe_count += 1
                     else:
                         curr_set.add(line)
     print("# of dupes while filling set:", dupe_count)
