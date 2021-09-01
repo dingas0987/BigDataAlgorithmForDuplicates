@@ -2,11 +2,11 @@ import math
 import sys
 import psutil
 import os 
-from os import path
+from os import path, write
 from file_utils import *
 
-#amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.05)
-amount_of_ram_to_be_used = 255 #4294967296
+amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.05)
+#amount_of_ram_to_be_used = 255 #4294967296
 dupe_loc = []
 curr_set = set()
 dupe_count = 0
@@ -32,18 +32,18 @@ def fill_set(file_input):
             if curr_set.__sizeof__() < amount_of_ram_to_be_used:
                 fill_set_line_count += 1
                 if fill_set_line_count > offset_by:
+                    if fill_set_line_count in dupe_loc:
+                        continue
                     if line in curr_set:
-                        if fill_set_line_count in dupe_loc:
-                            continue
-                        else:
-                            dupe_loc.append(fill_set_line_count)
-                            dupe_count += 1
+                        dupe_loc.append(fill_set_line_count)
+                        dupe_count += 1
                     else:
                         curr_set.add(line)
     print("# of dupes while filling set:", dupe_count)
     offset_by = fill_set_line_count
     fill_set_line_count = 0
-    leftover = leftover - offset_by
+    leftover = total_lines - offset_by
+    print("leftover:", leftover)
     compare_to_file(file_input)
 
 def compare_to_file(file_input):
@@ -54,12 +54,15 @@ def compare_to_file(file_input):
         for line in input:
             line_count += 1
             if line_count > offset_by:
-                if line in curr_set:
+                if line_count in dupe_loc:
+                    continue
+                if line in curr_set:    
                     dupe_loc.append(line_count)
                     counter += 1
     print("# of dupes in rest of file that is contained in current set", counter)
     dupe_count += counter
     print("current # of duplicates found", dupe_count)
+    print("dupe_loc", dupe_loc)
     curr_set.clear()
 
 def removeLineHelper(file_input, line_selection):
@@ -88,22 +91,36 @@ def removeLineHelper(file_input, line_selection):
     frw.truncate()
     frw.close()
 
+def writeFile(filename, output):
+    line_count = 0
+    with open(filename, 'r') as readfile:
+        with open(output, 'w') as writefile:
+            for line in readfile:
+                line_count += 1
+                if line_count in dupe_loc:
+                    continue
+                else:
+                    writefile.writelines(line)
+
 # Counter starts at 1 since the first line in the text file is line 0
 # counter is then incremented for each removal in the array of duplicates
 def delete_lines(filename):
     dupe_loc.sort()
     counter = 1
     for x in dupe_loc:
-        removeLineHelper(filename, x - counter)
+        #removeLineHelper(filename, x - counter)
         counter += 1
     dupe_loc.clear()
 
-def main(filename):
+def main(filename, output):
     add_newline_if_missing(filename)
     get_total_lines(filename)
     while(leftover != 0):
         fill_set(filename)
         if offset_by == total_lines:
             break
-    delete_lines(filename)
+    #delete_lines(filename)
+    writeFile(filename, output)
     print("total dupes", dupe_count)
+
+print(amount_of_ram_to_be_used)

@@ -19,3 +19,7 @@ remove_dupe_from_large_file.py
 testing3.py
 big_test.txt
 sample1_orig copy.txt
+sample.txt
+maketextfile.py
+sample_large.txt
+sample_large_output.txt
