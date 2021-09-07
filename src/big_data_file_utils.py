@@ -62,7 +62,6 @@ def compare_to_file(file_input):
     print("# of dupes in rest of file that is contained in current set", counter)
     dupe_count += counter
     print("current # of duplicates found", dupe_count)
-    print("dupe_loc", dupe_loc)
     curr_set.clear()
 
 def removeLineHelper(file_input, line_selection):
