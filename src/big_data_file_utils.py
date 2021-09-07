@@ -6,7 +6,6 @@ from os import path, write
 from file_utils import *
 
 amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.05)
-#amount_of_ram_to_be_used = 255 #4294967296
 dupe_loc = []
 curr_set = set()
 dupe_count = 0
@@ -64,6 +63,7 @@ def compare_to_file(file_input):
     print("current # of duplicates found", dupe_count)
     curr_set.clear()
 
+# Pretty much unused/ slower than just writing to a new file
 def removeLineHelper(file_input, line_selection):
     fro = open(file_input, "r")
 
@@ -107,7 +107,6 @@ def delete_lines(filename):
     dupe_loc.sort()
     counter = 1
     for x in dupe_loc:
-        #removeLineHelper(filename, x - counter)
         counter += 1
     dupe_loc.clear()
 
@@ -118,8 +117,5 @@ def main(filename, output):
         fill_set(filename)
         if offset_by == total_lines:
             break
-    #delete_lines(filename)
     writeFile(filename, output)
     print("total dupes", dupe_count)
-
-print(amount_of_ram_to_be_used)
