@@ -6,7 +6,7 @@ from os import path, write
 from file_utils import *
 
 amount_of_ram_to_be_used = (psutil.virtual_memory().free * 0.05)
-dupe_loc = set() #[]
+dupe_loc = set()
 curr_set = set()
 dupe_count = 0
 total_lines = 0
@@ -26,6 +26,7 @@ def fill_set(file_input):
     global dupe_count
     global offset_by
     global leftover
+    fill_set_dupe_count = 0
     with open(file_input, 'r') as input:
         for line in input:
             if curr_set.__sizeof__() < amount_of_ram_to_be_used:
@@ -34,12 +35,12 @@ def fill_set(file_input):
                     if fill_set_line_count in dupe_loc:
                         continue
                     if line in curr_set:
-                        #dupe_loc.append(fill_set_line_count)
                         dupe_loc.add(fill_set_line_count)
-                        dupe_count += 1
+                        fill_set_dupe_count += 1
                     else:
                         curr_set.add(line)
-    print("# of dupes while filling set:", dupe_count)
+    print("# of dupes while filling set:", fill_set_dupe_count)
+    dupe_count += fill_set_dupe_count
     offset_by = fill_set_line_count
     fill_set_line_count = 0
     leftover = total_lines - offset_by
@@ -57,7 +58,6 @@ def compare_to_file(file_input):
                 if line_count in dupe_loc:
                     continue
                 if line in curr_set:    
-                    #dupe_loc.append(line_count)
                     dupe_loc.add(line_count)
                     counter += 1
     print("# of dupes in rest of file that is contained in current set", counter)
